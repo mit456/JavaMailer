@@ -14,8 +14,8 @@ public class DBUtils {
     // Credentials for connections
     private static Connection connection = null;
     private static final String table_url = "jdbc:mysql://127.0.0.1/java_db_test";
-    private static final String user = "root";
-    private static final String password = "ilostpassword";
+    private static final String user = "***";
+    private static final String password = "*****";
     private static final String driver_class = "com.mysql.jdbc.Driver";
 
     /**
