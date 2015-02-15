@@ -63,7 +63,7 @@ public class DBUtils {
     /**
      * Method that shows the errors
      *
-     * @param {String} Message
+     * @param {String} message
      * @option {Exception} e
      *
      */
@@ -89,5 +89,4 @@ public class DBUtils {
             }
         }
     }
-
 }
