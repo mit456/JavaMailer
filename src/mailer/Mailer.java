@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mailer;
 
 /**
  *
  * @author blah-blah
  */
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +45,7 @@ public class Mailer {
 
         // List of Emails = 5 (We can change accordingly)
         List<String[]> EmailList = new ArrayList<>(5);
-        String query = "SELECT * FROM EmailQueue where status = '0'";
+        String query = "SELECT * FROM EmailQueue where status = '0'";   //SQL Query to get email queue
 
         try {
             conn = DBUtils.getConnection();             //Connection with singleton
@@ -63,9 +59,13 @@ public class Mailer {
                 user[2] = result.getString("subject");
                 user[3] = result.getString("body");
 
+                //Add Each element in EmailList
                 EmailList.add(user);
 
+                //Testing Size = 5. We can change it accordingly
                 if (EmailList.size() == 5) {
+
+                    //Final List of 5 Emails to send
                     final List<String[]> EList = new ArrayList<>(EmailList);
                     Executor.execute(new Runnable() {
                         @Override
@@ -73,6 +73,7 @@ public class Mailer {
                             sendMail(EList);
                         }
                     });
+                    //After sending clearing EmailList so that next 5 enteries will be inserted in EmailList
                     EmailList.clear();
                 }
             }
@@ -81,6 +82,9 @@ public class Mailer {
         } finally {
             DBUtils.closeConnection();          // Closing Connection
         }
+
+        //Checking whether all has been sent or not from Email List
+        //If not then send first
         if (!EmailList.isEmpty()) {
             final List<String[]> Elist = EmailList;
             Executor.execute(new Runnable() {
@@ -92,6 +96,7 @@ public class Mailer {
             EmailList.clear();
         }
 
+        //Finally Terminate the Executor
         while (!Executor.isTerminated()) {
             Executor.shutdown();
             Executor.awaitTermination(10, TimeUnit.DAYS);
@@ -124,6 +129,7 @@ public class Mailer {
      */
     private static void Send(final String from, String to, String subject, String body) {
 
+        //SMTP settings
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.socketFactory.port", "465");
@@ -132,6 +138,7 @@ public class Mailer {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", "465");
 
+        //Authentication 
         Session session = Session.getDefaultInstance(props,
                 new javax.mail.Authenticator() {
                     @Override
@@ -141,13 +148,14 @@ public class Mailer {
                 });
 
         try {
+            //Create meassge using MimeMessage
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(subject);
             message.setText(body);
 
-            //send message
+            //Send message
             Transport.send(message);
 
             System.out.println("message sent successfully");

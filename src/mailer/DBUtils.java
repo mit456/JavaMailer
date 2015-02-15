@@ -53,7 +53,8 @@ public class DBUtils {
      *
      */
     public static Connection getConnection() {
-        if (connection == null) {               //Make if connection is not established.
+        //Check whether the connection has been made or not, if not create
+        if (connection == null) {
             loadDriver();
             loadConnection();
         }
